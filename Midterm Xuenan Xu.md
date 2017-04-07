@@ -25,6 +25,7 @@ Frequency distribution:
 + `NSFRTRZU` contains the remaining two undecided characters, which are `F` and `T`, I did some word search because I couldn't recognize the pattern at first, and the first result is `religion` that quite makes sense;
 
 Mapping:
+
 | P | C | S | U | R | V | G | H | D | E | Z | M | O | K | X | N | L | I | F | T |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | W | H | E | N | I | T | S | A | Q | U | O | F | M | Y | V | R | B | D | L | G |
