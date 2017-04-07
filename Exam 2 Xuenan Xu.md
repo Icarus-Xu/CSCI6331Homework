@@ -100,7 +100,7 @@ NJWXTKSSLCJJ
 
 **a)** Degree is m = 5
 
-**b)** Period is 2<sup>m - 1</sup> = 2<sup>4</sup> = 16
+**b)** Period is 2<sup>m</sup>  - 1= 2<sup>5</sup> - 1= 31
 
 **c)** First 5 bit is `11010`
 
