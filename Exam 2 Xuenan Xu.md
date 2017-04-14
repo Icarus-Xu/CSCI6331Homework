@@ -13,88 +13,28 @@
 
 **d)** Pr[c|2] = Pr[c] * Pr[K<sub>3</sub>] / Pr[2] = 1/6 * 1/6 / 1/3 = 1/12;
 
-**e)** H[K] = -(Pr[k1] * log<sub>2</sub>Pr[k1] + Pr[k2] * log<sub>2</sub>Pr[k2] + Pr[k3] * log<sub>2</sub>Pr[k3]) = -(2/3 * log<sub>2</sub>2/3 + 1/6 * log<sub>2</sub>1/6 + 1/6 * log<sub>2</sub>1/6) = 1/3log<sub>2</sub>3 - 1
+**e)** H[K] = -(Pr[k1] * log<sub>2</sub>Pr[k1] + Pr[k2] * log<sub>2</sub>Pr[k2] + Pr[k3] * log<sub>2</sub>Pr[k3]) = -(2/3 * log<sub>2</sub>2/3 + 1/6 * log<sub>2</sub>1/6 + 1/6 * log<sub>2</sub>1/6) = log<sub>2</sub>3 - 1/3 = 1.2516
 
 **2**
 
-Tool:
-```java
-static String autokeyCipher(String plainText, int key) {
-    char[] p = plainText.toCharArray();
-    StringBuilder sb = new StringBuilder();
-    // For each plain char, its corresponding ciphered char is itself plus the key (mod 26)
-    for (char c : p) {
-        sb.append((char) ((c - 'A' + key) % 26 + 'A'));
-        // The new key is the current plain text
-        key = c - 'A';
-    }
-    return sb.toString();
-}
-```
-
-Usage:
-```java
-public static void main(String[] args) {
-    String plaintext = "AUTOKEYCIPHER";
-    System.out.println(autokeyCipher(plaintext, 10));
-}
-```
-
-Result:
-```
-KUNHYOCAKXWLV
-```
+* Take the first character `A`, the key is 10, so we calculate `A + 10 mod 26` and got `K`, and use `A` as the new key
+* Take the second character `U`, the key is `A` which equals to `0`, so we calculate `U + 0 mod 26 = U` and use `U` as the new key
+* Repeat this process, we have `KUNHYOCAKXWLV` as result
 
 **3**
 
-Tools:
-```java
-static String permutationCipher(String text, int[] pattern) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i <= text.length() / pattern.length; i++) {
-        // Each time of inner loop is of length of the pattern
-        for (int j : pattern) {
-            // Compute the offset of current char
-            int offset = i * pattern.length + j - 1;
-            // Add to result
-            if (offset < text.length())
-                sb.append(text.charAt(offset));
-        }
-    }
-    return sb.toString();
-}
-```
+Given the formula e<sub>1</sub>(&pi;(M)), we shall permutate the string with &pi; = (2 3 1 4) first and then use the vigenere cipher with key `USETHISKEY` on the result.
 
-```java
-static String vigenereCipher(String text, String key) {
-    StringBuilder sb = new StringBuilder();
-    int keyLength = key.length();
-    int[] equivalent = new int[keyLength];
-    // Convert key into Z26
-    for (int i = 0; i < key.length(); i++)
-        equivalent[i] = key.charAt(i) - 'A';
-    // Add key to plain text
-    for (int i = 0; i < text.length(); i++)
-        sb.append((char) ((text.charAt(i) - 'A' + equivalent[i % keyLength]) % 26 + 'A'));
-    return sb.toString();
-}
-```
-
-Usage:
-```java
-public static void main(String[] args) {
-    String plaintext = "STREAMCIPHER";
-    int[] pattern = {2, 3, 1, 4};
-    String key = "USETHISKEY";
-    // Permutation first, then vigenere
-    System.out.println(vigenereCipher(permutationCipher(plaintext, pattern), key));
-}
-```
-
-Result:
-```
-NJWXTKSSLCJJ
-```
+1. Permutation
+    * Take the first 4 characters `STRE`
+    * Put the 2nd char to 1st, 3rd char to 2nd, 1st char to 3rd and 4th char to 4th
+    * We get `TRSE`
+    * Repeat this process we have `TRSEMCAIHEPR` as result
+2. Vigenere cipher
+    * The length of key is 10, so we take the first 10 characters of previous result `TRSEMCAIHE`
+    * Add the character of the key to the corresponding position of the result, for example, for the 1st position, we calculate `T + U mod 26` and get `N`, then for the 2nd position, we calculate `R + S mod 26` and get `J`
+    * Repeat this process on the 10 taken characters, we have `NJWXTKSSLC`
+    * Repeat the whole process above on the previous result string, we got `NJWXTKSSLCJJ` as final result
 
 **4**
 
@@ -106,25 +46,7 @@ NJWXTKSSLCJJ
 
 **d)**
 
-Code:
-```java
-public static void main(String args[]) {
-    int[] result = new int[15];
-    // Initialization
-    result[0] = 1;
-    result[1] = 1;
-    result[2] = 0;
-    result[3] = 1;
-    result[4] = 0;
-    for (int i = 5; i < result.length; i++)
-        // Another form of the linear recurrence formula
-        result[i] = (result[i - 5] + result[i - 4]) % 2;
-    for (int r : result)
-        System.out.print(r);
-}
-```
-
-Result:
-```
-110100111010011
-```
+1. The formula given can be converted into **z<sub>i</sub> = z<sub>i - 5</sub> + z<sub>i - 4</sub> mod 2**
+2. We have initial stream **11010**
+    * When we calculate the 6th number, we take the sum of 1st and 2nd number, mod 2, and get **0**
+    * Repeat this process, we have result **110100111010011**

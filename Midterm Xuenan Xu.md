@@ -48,103 +48,29 @@ Pr[2] = Pr[a] * Pr[K<sub>2</sub>] + Pr[b] * Pr[K<sub>1</sub>] + Pr[c] * Pr[K<sub
 
 Pr[3] = 1 - Pr[1] - Pr[2] = 1/4
 
-H[C] = -(Pr[1] * log<sub>2</sub>Pr[1] + Pr[2] * log<sub>2</sub>Pr[2] + Pr[3] * log<sub>2</sub>Pr[3]) = -(5/12 * log<sub>2</sub>5/12 + 1/3 * log<sub>2</sub>1/3 + 1/4 * log<sub>2</sub>1/4) = 3/4log<sub>2</sub>3 + 2/3log<sub>2</sub>4 - 5/12log<sub>2</sub>5
+H[C] = -(Pr[1] * log<sub>2</sub>Pr[1] + Pr[2] * log<sub>2</sub>Pr[2] + Pr[3] * log<sub>2</sub>Pr[3]) = -(5/12 * log<sub>2</sub>5/12 + 1/3 * log<sub>2</sub>1/3 + 1/4 * log<sub>2</sub>1/4) = 3/4log<sub>2</sub>3 + 2/3log<sub>2</sub>4 - 5/12log<sub>2</sub>5 = 1.5546
 
 **3**
 
-Tools:
-```java
-static String multiplicativeDecipher(String cipheredText, int key) {
-    // Initialize multiplicative inverse map
-    HashMap<Integer, Integer> inverse = new HashMap<>();
-    inverse.put(1, 1);
-    inverse.put(3, 9);
-    inverse.put(5, 21);
-    inverse.put(7, 15);
-    inverse.put(9, 3);
-    inverse.put(11, 19);
-    inverse.put(15, 7);
-    inverse.put(17, 23);
-    inverse.put(19, 11);
-    inverse.put(21, 5);
-    inverse.put(23, 17);
-    inverse.put(25, 25);
-    // Convert string to chars
-    char[] p = cipheredText.toCharArray();
-    StringBuilder sb = new StringBuilder();
-    // Multiply each char with the multiplicative inverse of key, then mod 26
-    for (char c : p)
-        sb.append((char) (((c - 'A') * inverse.get(key)) % 26 + 'A'));
-    return sb.toString();
-}
-```
-```java
-static String permutationDecipher(String cipheredText, int[] pattern) {
-    int[] p = new int[pattern.length];
-    // Compute the reverse of π
-    for (int i = 0; i < pattern.length; i++)
-        p[pattern[i] - 1] = i + 1;
-    // Reverse the permutation process by permutate with the reverse of π
-    return SimpleCiphers.permutationCipher(cipheredText, p);
-}
-```
-```java
-static String autokeyDecipher(String cipheredText, int key) {
-    char[] c = cipheredText.toCharArray();
-    StringBuilder sb = new StringBuilder();
-    // For each ciphered char, its corresponding plain char is itself minus the key (mod 26)
-    for (char p : c) {
-        // The new key is the plain text just decrypted
-        key = (p - 'A' - key + 26) % 26;
-        sb.append((char) (key + 'A'));
-    }
-    return sb.toString();
-}
-```
+According to the cipher process e<sub>2</sub>(&pi;(e<sub>1</sub>(M))), we shall use the multiplicative decipher with key `5` to decrypt the string first, and permutate the result with &pi; = (2 3 1 4), finally decipher the result with autokey decipher with key `5`.
 
-Decipher of the described cryptosystem:
-```java
-public static void main(String[] args) {
-    String cipheredText = "RXJNJPOEHLZGFPBV";
-    String decipherS2 = multiplicativeDecipher(cipheredText, 5);
-    System.out.println(decipherS2);
-    int[] pattern = {2, 3, 1, 4};
-    String decipherS3 = permutationDecipher(decipherS2, pattern);
-    System.out.println(decipherS3);
-    String plainText = autokeyDecipher(decipherS3, 5);
-    System.out.println(plainText);
-}
-```
-
-Result:
-```
-CRYPTOPRODUCTIVE
-```
+1. First, use the multiplicative decipher to decrypt the string **RXJNJPOEHLZGFPBV**
+    * The reverse of `5` is `21`
+    * Starting with R, we calculate `R * 21 mod 26`, and we have `T`
+    * Repeat this process, and we get **TPHNHDIGRXFWBDVZ**
+2. Second, use the permutation decipher with &pi; = (2 3 1 4) to decrypt the result
+    * Take the first 4 characters **TPHN**, put the 2nd char at 1st, 3rd char at 2nd, 1st char at 3rd and 4th at 4th, we have **HTPN**
+    * Repeat this process, and we get **HTPNIHDGFRXWVBDZ**
+3. Finally, use the autokey decipher to decrypt the result
+    * Take the first character **H**, the key is 5, so we calculate `H - 5 mod 26` and get `C`, and use `C` as the new key
+    * Repeat this process, we have **CRYPTOPRODUCTIVE** as final result
 
 **4**
 
-Code:
-```java
-public static void main(String args[]) {
-    int[] result = new int[18];
-    // Initialization
-    result[0] = 1;
-    result[1] = 1;
-    result[2] = 0;
-    result[3] = 1;
-    result[4] = 0;
-    result[5] = 1;
-    for (int i = 6; i < result.length; i++)
-        // Another form of the linear recurrence formula
-        result[i] = (result[i - 6] + result[i - 4]) % 2;
-    for (int r : result)
-        System.out.print(r);
-}
-```
-Result:
-```
-110101100011101101
-```
+1. The formula given can be converted into **z<sub>i</sub> = z<sub>i - 6</sub> + z<sub>i - 4</sub> mod 2**
+2. We have initial stream **110101**
+    * When we calculate the 7th number, we take the sum of 1st and 3rd number, mod 2, and get **1**
+    * Repeat this process, we have result **110101100011101101**
 
 **5**
 
